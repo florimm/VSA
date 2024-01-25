@@ -1,4 +1,6 @@
 ﻿using DocumentManagementStore.Common;
+using DocumentManagementStore.Common.Core.ES.Repositories;
+using DocumentManagementStore.Features.Documents.Domain;
 
 namespace DocumentManagementStore.Features.Documents
 {
@@ -10,11 +12,15 @@ namespace DocumentManagementStore.Features.Documents
            .WithTags("documents")
            .AddEndpointFilter<ValidationFilter<RemoveMetadataFromDocument>>()
            .Produces(StatusCodes.Status400BadRequest);
-        public static IResult Handle(Guid folderId)
+        
+        public static async Task<IResult> Handle([AsParameters] RemoveMetadataFromDocument req, [FromServices] IAggregateRepository repo)
         {
+            var document = await repo.LoadAsync<Document>(req.DocumentId);
+            document.RemoveMetadata(req.MetadataKey);
+            var events = await repo.StoreAsync(document);
             return Results.Ok();
         }
-        public record RemoveMetadataFromDocument(Guid DocumentId, string MetadataKey);
+        public record RemoveMetadataFromDocument(string DocumentId, string MetadataKey);
 
         public class Validator : AbstractValidator<RemoveMetadataFromDocument>
         {

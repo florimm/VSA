@@ -1,4 +1,6 @@
 ﻿using DocumentManagementStore.Common;
+using DocumentManagementStore.Common.Core.ES.Repositories;
+using DocumentManagementStore.Features.Documents.Domain;
 
 namespace DocumentManagementStore.Features.Documents
 {
@@ -11,12 +13,15 @@ namespace DocumentManagementStore.Features.Documents
            .AddEndpointFilter<ValidationFilter<MoveDocument>>()
            .Produces(StatusCodes.Status400BadRequest);
 
-        public static IResult Handle([AsParameters] MoveDocument request)
+        public static async Task<IResult> Handle([AsParameters] MoveDocument req, [FromServices] IAggregateRepository repo)
         {
+            var document = await repo.LoadAsync<Document>(req.DocumentId);
+            document.MoveDocument(req.NewFolderId);
+            var events = await repo.StoreAsync(document);
             return Results.Ok();
         }
 
-        public record MoveDocument([FromRoute] Guid DocumentId, [FromRoute] Guid NewFolderId);
+        public record MoveDocument([FromRoute] string DocumentId, [FromRoute] string NewFolderId);
 
         public class Validator : AbstractValidator<MoveDocument>
         {

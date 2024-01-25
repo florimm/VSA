@@ -22,7 +22,7 @@ namespace DocumentManagementStore.Features.Documents.Domain
             ApplyEvent(@event);
         }
 
-        public void DeleteDocument()
+        public void MarkAsDeleted()
         {
             var @event = new DocumentDeleted(Id);
             ApplyEvent(@event);
@@ -40,11 +40,18 @@ namespace DocumentManagementStore.Features.Documents.Domain
             ApplyEvent(@event);
         }
 
+        public void RemoveMetadata(string key)
+        {
+            var @event = new DocumentMetadataRemoved(Id, key);
+            ApplyEvent(@event);
+        }
+
         public string Name { get; private set; }
 
         public string FolderId { get; private set; }
 
         public bool MarkedAsDeleted { get; set; } = false;
+        
         public List<string> Tags { get; private set; }
 
         public List<Metadata> Metadata { get; private set; }
@@ -58,6 +65,12 @@ namespace DocumentManagementStore.Features.Documents.Domain
         private void Apply(DocumentMetadataAdded @event)
         {
             Metadata.Add(new Metadata(@event.Key, @event.Value));
+            Version++;
+        }
+        
+        private void Apply(DocumentMetadataRemoved @event)
+        {
+            Metadata = Metadata.Where(t => t.Key != @event.Key).ToList();
             Version++;
         }
 

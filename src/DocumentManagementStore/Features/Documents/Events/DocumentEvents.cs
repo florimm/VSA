@@ -9,3 +9,4 @@ public record DocumentMoved(string Id, string NewFolderId) : IDomainEvent;
 public record DocumentRenamed(string Id, string Name) : IDomainEvent;
 
 public record DocumentMetadataAdded(string Id, string Key, string Value) : IDomainEvent;
+public record DocumentMetadataRemoved(string Id, string Key): IDomainEvent;

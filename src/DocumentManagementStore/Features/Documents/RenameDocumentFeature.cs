@@ -1,4 +1,6 @@
 ﻿using DocumentManagementStore.Common;
+using DocumentManagementStore.Common.Core.ES.Repositories;
+using DocumentManagementStore.Features.Documents.Domain;
 
 namespace DocumentManagementStore.Features.Documents
 {
@@ -12,16 +14,19 @@ namespace DocumentManagementStore.Features.Documents
            .Produces<DocumentView>()
            .Produces(StatusCodes.Status400BadRequest);
 
-        public static IResult Handle(Guid folderId)
+        public static async Task<IResult> Handle([AsParameters] RenameDocument req, [FromServices] IAggregateRepository repo)
         {
-            return Results.Ok(new DocumentView(Guid.NewGuid()));
+            var document = await repo.LoadAsync<Document>(req.DocumentId);
+            document.RemoveMetadata(req.Payload.Name);
+            var events = await repo.StoreAsync(document);
+            return Results.Ok(document.ToView());
         }
-        public record RenameDocument([FromRoute] Guid DocumentId, [FromBody] RenameDocument.RenameBody Payload)
+        public record RenameDocument([FromRoute] string DocumentId, [FromBody] RenameDocument.RenameBody Payload)
         {
             public record RenameBody(string Name);
         }
 
-        public record DocumentView(Guid DocumentId);
+        public record DocumentView(string DocumentId);
 
         public class Validator : AbstractValidator<RenameDocument>
         {
@@ -32,5 +37,9 @@ namespace DocumentManagementStore.Features.Documents
             }
         }
 
+        public static DocumentView ToView(this Document doc)
+        {
+            return new DocumentView(doc.Id);
+        }
     }
 }
