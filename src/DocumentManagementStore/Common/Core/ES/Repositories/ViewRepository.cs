@@ -10,7 +10,7 @@ public interface IViewRepository
         where T : class, new();
 
     Task<IReadOnlyList<T>> LoadAll<T>(int skip, int take, CancellationToken cancellationToken)
-        where T : class, new();
+        where T : class;
 
     Task<IPagedList<T>> Load<T>(int pageNumber, int pageSize, CancellationToken cancellationToken)
         where T : class, new();
@@ -37,7 +37,7 @@ public class ViewRepository : IViewRepository
         int take,
         CancellationToken cancellationToken
     )
-        where T : class, new()
+        where T : class
     {
         using var session = _store.QuerySession();
         var items =

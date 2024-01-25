@@ -1,6 +1,6 @@
 ﻿using DocumentManagementStore.Common;
 using DocumentManagementStore.Common.Core.ES.Repositories;
-using DocumentManagementStore.Features.Documents.Domain;
+using DocumentManagementStore.Domain;
 
 namespace DocumentManagementStore.Features.Documents
 {
@@ -17,7 +17,7 @@ namespace DocumentManagementStore.Features.Documents
         public static async Task<IResult> Handle([AsParameters] RenameDocument req, [FromServices] IAggregateRepository repo)
         {
             var document = await repo.LoadAsync<Document>(req.DocumentId);
-            document.RemoveMetadata(req.Payload.Name);
+            document.Rename(req.Payload.Name);
             var events = await repo.StoreAsync(document);
             return Results.Ok(document.ToView());
         }

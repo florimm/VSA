@@ -1,6 +1,6 @@
 ﻿using DocumentManagementStore.Common;
 using DocumentManagementStore.Common.Core.ES.Repositories;
-using DocumentManagementStore.Features.Documents.Domain;
+using DocumentManagementStore.Domain;
 
 namespace DocumentManagementStore.Features.Documents
 {

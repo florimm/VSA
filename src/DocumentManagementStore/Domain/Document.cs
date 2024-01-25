@@ -1,7 +1,7 @@
 ﻿using DocumentManagementStore.Common.Core.ES;
-using DocumentManagementStore.Features.Documents.Events;
+using DocumentManagementStore.Domain.Events;
 
-namespace DocumentManagementStore.Features.Documents.Domain
+namespace DocumentManagementStore.Domain
 {
     public class Document : Aggregate
     {
@@ -51,7 +51,7 @@ namespace DocumentManagementStore.Features.Documents.Domain
         public string FolderId { get; private set; }
 
         public bool MarkedAsDeleted { get; set; } = false;
-        
+
         public List<string> Tags { get; private set; }
 
         public List<Metadata> Metadata { get; private set; }
@@ -67,7 +67,7 @@ namespace DocumentManagementStore.Features.Documents.Domain
             Metadata.Add(new Metadata(@event.Key, @event.Value));
             Version++;
         }
-        
+
         private void Apply(DocumentMetadataRemoved @event)
         {
             Metadata = Metadata.Where(t => t.Key != @event.Key).ToList();

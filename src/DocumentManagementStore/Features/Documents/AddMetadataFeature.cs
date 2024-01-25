@@ -1,5 +1,6 @@
 ﻿using DocumentManagementStore.Common;
 using DocumentManagementStore.Common.Core.ES.Repositories;
+using DocumentManagementStore.Domain;
 using DocumentManagementStore.Features.Documents.Domain;
 
 namespace DocumentManagementStore.Features.Documents
@@ -14,15 +15,17 @@ namespace DocumentManagementStore.Features.Documents
            .Produces<DocumentView>()
            .Produces(StatusCodes.Status400BadRequest);
 
-        public static async Task<IResult> Handle(Guid folderId, [FromServices] IAggregateRepository aggregateRepository)
+        public static async Task<IResult> Handle([AsParameters] AddMetadataToDocument req, [FromServices] IAggregateRepository aggregateRepository)
         {
-            var result = await aggregateRepository.StoreAsync(new Document());
-            return Results.Ok(new DocumentView(Guid.NewGuid()));
+            var doc = await aggregateRepository.LoadAsync<Document>(req.DocumentId);
+            doc.AddMetadata(req.MetadataKey, req.MetadataValue);
+            var result = await aggregateRepository.StoreAsync(doc);
+            return Results.Ok(new DocumentView(doc.Id));
         }
 
-        public record AddMetadataToDocument(Guid DocumentId, string MetadataKey, string MetadataValue);
+        public record AddMetadataToDocument(string DocumentId, string MetadataKey, string MetadataValue);
 
-        public record DocumentView(Guid DocumentId);
+        public record DocumentView(string DocumentId);
 
         public class Validator : AbstractValidator<AddMetadataToDocument>
         {

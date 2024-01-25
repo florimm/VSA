@@ -1,6 +1,6 @@
 ﻿using DocumentManagementStore.Common;
 using DocumentManagementStore.Common.Core.ES.Repositories;
-using DocumentManagementStore.Features.Documents.Domain;
+using DocumentManagementStore.Domain;
 
 namespace DocumentManagementStore.Features.Documents
 {
@@ -14,16 +14,16 @@ namespace DocumentManagementStore.Features.Documents
             .Produces<DocumentView>()
             .Produces(StatusCodes.Status400BadRequest);
 
-        public static async Task<IResult> Handle(IAggregateRepository aggregateRepository)
+        public static async Task<IResult> Handle([FromServices] IAggregateRepository aggregateRepository)
         {
-            var doc = new Document() { };
+            var doc = new Document(Guid.NewGuid().ToString());
             await aggregateRepository.StoreAsync(doc);
-            return Results.Ok(new DocumentView(Guid.NewGuid()));
+            return Results.Ok(new DocumentView(doc.Id));
         }
 
-        public record CreateDocument(Guid DocumentId, string Title, string Content, Guid AuthorId, Guid? FolderId);
+        public record CreateDocument(string DocumentId, string Title, string Content, Guid AuthorId, Guid? FolderId);
 
-        public record DocumentView(Guid DocumentId);
+        public record DocumentView(string DocumentId);
 
 
         public class Validator : AbstractValidator<CreateDocument>
@@ -37,6 +37,5 @@ namespace DocumentManagementStore.Features.Documents
                 RuleFor(x => x.FolderId).NotEmpty();
             }
         }
-
     }
 }
