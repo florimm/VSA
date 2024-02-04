@@ -50,7 +50,7 @@ namespace DocumentManagementStore.Domain
 
         public string FolderId { get; private set; }
 
-        public bool MarkedAsDeleted { get; set; } = false;
+        public bool MarkedAsDeleted { get; private set; } = false;
 
         public List<string> Tags { get; private set; }
 
