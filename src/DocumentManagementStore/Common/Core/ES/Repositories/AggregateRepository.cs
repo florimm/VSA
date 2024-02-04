@@ -55,8 +55,8 @@ public class AggregateRepository : IAggregateRepository
     {
         try
         {
-            using var session = _store.LightweightSession();
-            var events = aggregate.GetUncommittedEvents();
+            await using var session = _store.LightweightSession();
+            var events = aggregate.GetUncommittedEvents().ToList();
             session.Events.Append(aggregate.Id, aggregate.Version, events);
             await session.SaveChangesAsync(ct);
             aggregate.ClearUncommittedEvents();

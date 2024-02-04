@@ -1,4 +1,5 @@
 using DocumentManagementStore.Common;
+using DocumentManagementStore.Common.Core.ES.Repositories;
 using DocumentManagementStore.Common.Core.Events;
 using DocumentManagementStore.Options;
 using DocumentManagementStore.Projections;
@@ -11,9 +12,24 @@ using Microsoft.Extensions.Options;
 using Weasel.Core;
 
 var builder = WebApplication.CreateBuilder(args);
-
+builder.Services.Configure<DatabaseConnection>(
+    builder.Configuration.GetSection("eventStorage-db")
+);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    var schemaHelper = new SwashbuckleSchemaHelper();
+    c.CustomSchemaIds(type => schemaHelper.GetSchemaId(type));
+    c.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
+});
+builder.Services.AddValidatorsFromAssemblyContaining<Program>();
+builder.Services.AddSingleton<IAggregateRepository, AggregateRepository>();
+builder.Services.AddSingleton<IViewRepository, ViewRepository>();
+
+builder.Services.AddTransient<FolderReadModelBuilder>();
+builder.Services.AddTransient<UserReadModelBuilder>();
+builder.Services.AddTransient<DocumentReadModelBuilder>();
 
 builder.Services
             .AddMarten(
@@ -37,9 +53,9 @@ builder.Services
                     o.AutoCreateSchemaObjects = AutoCreate.CreateOrUpdate;
                     o.Events.StreamIdentity = StreamIdentity.AsString;
                     o.Events.AddEventTypes(domainEvents);
-                    o.Projections.Add<FolderReadModelBuilder>(ProjectionLifecycle.Async);
-                    o.Projections.Add<DocumentReadModelBuilder>(ProjectionLifecycle.Async);
-                    o.Projections.Add<UserReadModelBuilder>(ProjectionLifecycle.Async);
+                    o.Projections.Add(sp.GetService<FolderReadModelBuilder>(), ProjectionLifecycle.Async);
+                    o.Projections.Add(sp.GetService<DocumentReadModelBuilder>(),ProjectionLifecycle.Async);
+                    o.Projections.Add(sp.GetService<UserReadModelBuilder>(), ProjectionLifecycle.Async);
                     
                     o.Projections.AddDefaultProjectionExceptionHandling(
                         sp.GetRequiredService<ILogger<Program>>()

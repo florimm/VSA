@@ -17,12 +17,12 @@ public class UserFoldersReadModelBuilder : MultiStreamProjection<UserFoldersRead
         this.Identity<AccessGranted>(c => c.Id);
     }
         
-    public void Apply(UserRegistered @event, UserFoldersReadModel view)
-        => view.Id = @event.Id;
+    public void Apply(UserRegistered @event, UserFoldersReadModel model)
+        => model.Id = @event.Id;
 
-    public void Apply(AccessGranted @event, UserFoldersReadModel view)
+    public void Apply(AccessGranted @event, UserFoldersReadModel model)
     {
-        view.Id = @event.Id;
-        view.Folders.Add(@event.FolderId);
+        model.Id = @event.Id;
+        model.Folders.Add(@event.FolderId);
     }
 }

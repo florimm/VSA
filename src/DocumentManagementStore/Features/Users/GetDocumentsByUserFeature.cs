@@ -9,7 +9,7 @@ public static class GetDocumentsByUsersFeatures
     public static void Register(IEndpointRouteBuilder endpoints) =>
     endpoints
         .MapPost("/users/{userId}/documents", Handle)
-        .WithTags("documents")
+        .WithTags("users")
         .AddEndpointFilter<ValidationFilter<GetDocumentByUserId>>()
         .Produces<IReadOnlyList<DocumentByUser>>()
         .Produces(StatusCodes.Status400BadRequest);

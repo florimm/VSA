@@ -2,7 +2,7 @@
 
 namespace DocumentManagementStore.Domain.Events;
 
-public record DocumentCreated(string Id) : IDomainEvent;
+public record DocumentCreated(string Id, string Name, string FolderId) : IDomainEvent;
 public record DocumentDeleted(string Id) : IDomainEvent;
 public record DocumentMoved(string Id, string NewFolderId) : IDomainEvent;
 

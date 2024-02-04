@@ -10,9 +10,9 @@ namespace DocumentManagementStore.Domain
 
         }
 
-        public Document(string Id)
+        public Document(string id, string name, string folderId)
         {
-            var @event = new DocumentCreated(Id);
+            var @event = new DocumentCreated(id, name, folderId);
             ApplyEvent(@event);
         }
 

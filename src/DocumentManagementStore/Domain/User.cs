@@ -1,6 +1,9 @@
-﻿namespace DocumentManagementStore.Domain
+﻿using DocumentManagementStore.Common.Core.ES;
+
+namespace DocumentManagementStore.Domain
 {
-    public class User
+    public class User: Aggregate
     {
+        
     }
 }

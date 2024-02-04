@@ -8,7 +8,7 @@ namespace DocumentManagementStore.Features.Documents
     {
         public static void Register(IEndpointRouteBuilder endpoints) =>
        endpoints
-           .MapPost("/documents/{folderId}/rename", Handle)
+           .MapPost("/documents/{documentId}/rename", Handle)
            .WithTags("documents")
            .AddEndpointFilter<ValidationFilter<RenameDocument>>()
            .Produces<DocumentView>()

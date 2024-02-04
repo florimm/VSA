@@ -8,7 +8,7 @@ namespace DocumentManagementStore.Features.Documents
     {
         public static void Register(IEndpointRouteBuilder endpoints) =>
        endpoints
-           .MapPost("/documents/{documentId}/move/{folderId}", Handle)
+           .MapPost("/documents/{documentId}/move/{newFolderId}", Handle)
            .WithTags("documents")
            .AddEndpointFilter<ValidationFilter<MoveDocument>>()
            .Produces(StatusCodes.Status400BadRequest);
