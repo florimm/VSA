@@ -4,6 +4,7 @@ using DocumentManagementStore.Domain;
 
 namespace DocumentManagementStore.Features.Documents
 {
+    //Endpoint
     public static class RenameDocumentFeature
     {
         public static void Register(IEndpointRouteBuilder endpoints) =>
@@ -14,6 +15,7 @@ namespace DocumentManagementStore.Features.Documents
            .Produces<DocumentView>()
            .Produces(StatusCodes.Status400BadRequest);
 
+        //Application service
         public static async Task<IResult> Handle([AsParameters] RenameDocument req, [FromServices] IAggregateRepository repo)
         {
             var document = await repo.LoadAsync<Document>(req.DocumentId);
@@ -21,13 +23,16 @@ namespace DocumentManagementStore.Features.Documents
             var events = await repo.StoreAsync(document);
             return Results.Ok(document.ToView());
         }
+        //Request
         public record RenameDocument([FromRoute] string DocumentId, [FromBody] RenameDocument.RenameBody Payload)
         {
             public record RenameBody(string Name);
         }
 
+        //Response
         public record DocumentView(string DocumentId);
 
+        //Validation
         public class Validator : AbstractValidator<RenameDocument>
         {
             public Validator()
