@@ -1,2 +1,5 @@
 src/DocumentManagementStore/obj/
 src/.vs/
+src/DocumentManagementStore/bin/
+src/Template.CRUD/obj/
+src/Template.CRUD/bin/
